@@ -2,14 +2,14 @@
 seeds = true
 skip-lint = false
 [programs.localnet]
-first_anchor_program = "AProvwUdgUYhvLJjejBH5Ba7LfS8wKAbj5KmFNmf2FNt"
+first_anchor_program = "GqcREMZ4UrdS6VwgVf3gnMV3iKYGbSoDVEuURjpgmvSG"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
-wallet = "Autnq8zhvT3RRTwJsboJkjn7FjXZomW2ByUKbXTEbRMy.json"
+cluster = "devnet"
+wallet = "./tests/Usrw6vhCpH4uWYJ6WeTKUAGM1zzSREVzFPNdirtANDz.json"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"

@@ -10,12 +10,18 @@ describe("first-anchor-program", () => {
   const program = anchor.workspace.FirstAnchorProgram as Program<FirstAnchorProgram>;
 
   it("test GM!", async () => {
-    try{
+    try {
+      const [pda,_] =  anchor.web3.PublicKey.findProgramAddressSync(
+        [Buffer.from(anchor.utils.bytes.utf8.encode("authority"))],
+        program.programId 
+      )
+      console.log("PDA", pda.toJSON());
+      
     const tx = await program.methods.myGmInstruction()
       .accounts({
-        gmProgram: new anchor.web3.PublicKey("GMoMVeaVmD8H2JqgbSaSBuELofJus3z5Lb97AfKFrw3k")
-      })
-      .rpc();
+        pda: pda,
+        gmProgram: new anchor.web3.PublicKey("GqcREMZ4UrdS6VwgVf3gnMV3iKYGbSoDVEuURjpgmvSG")
+      }).rpc();
       console.log("Your transaction signature", tx);
     } catch (error) {
       console.trace();

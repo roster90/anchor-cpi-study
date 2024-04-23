@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("GMoMVeaVmD8H2JqgbSaSBuELofJus3z5Lb97AfKFrw3k");
+declare_id!("GqcREMZ4UrdS6VwgVf3gnMV3iKYGbSoDVEuURjpgmvSG");
 
 #[program]
 pub mod gm_anchor {
@@ -42,7 +42,8 @@ impl anchor_lang::Id for GmProgram {
 
 #[derive(Accounts)]
 pub struct GmAccounts<'info> {
+
     /// CHECK: this is save, trust me, I'm a dev!
     pub signer: UncheckedAccount<'info>,
-    //pub gm_program: Program<'info, GmProgram>
+    pub gm_program: Program<'info, GmProgram>
 }
