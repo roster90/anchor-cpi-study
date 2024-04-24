@@ -1,11 +1,11 @@
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import { FirstAnchorProgram } from "../target/types/first_anchor_program";
-import { publicKey } from "@project-serum/anchor/dist/cjs/utils";
 
 describe("first-anchor-program", () => {
   // Configure the client to use the local cluster.
-  anchor.setProvider(anchor.AnchorProvider.env());
+  const provider = anchor.AnchorProvider.env();
+  anchor.setProvider(provider);
 
   const program = anchor.workspace.FirstAnchorProgram as Program<FirstAnchorProgram>;
 
@@ -30,6 +30,40 @@ describe("first-anchor-program", () => {
       throw error;
     }
   });
+
+  // it("test Pseudo!", async () => {
+  //   try {
+  //     const [pda,_] =  anchor.web3.PublicKey.findProgramAddressSync(
+  //       [Buffer.from(anchor.utils.bytes.utf8.encode("authority_3"))],
+  //       program.programId 
+  //     )
+
+  //     console.log("PDA:", pda.toString());
+      
+  //     const [pseudoAccount, _bump] =  anchor.web3.PublicKey.findProgramAddressSync(
+  //       [Buffer.from(anchor.utils.bytes.utf8.encode("pseudo_1"))],
+  //       program.programId
+  //     )
+  //     console.log("Pseudo Account:", pseudoAccount.toString());
+      
+  //   const value = new anchor.BN(666);
+      
+  //   const tx = await program.methods.myPseudoGmInstruction(value)
+  //     .accounts({
+  //       // pseudoAccount: pseudoAccount,
+  //       pda: pda,
+  //       gmProgram: new anchor.web3.PublicKey("GqcREMZ4UrdS6VwgVf3gnMV3iKYGbSoDVEuURjpgmvSG"),
+  //       authority: provider.wallet.publicKey,
+  //       systemProgram: anchor.web3.SystemProgram.programId,
+  //     }).rpc();
+  //     console.log("Your transaction signature", tx);
+  //   } catch (error) {
+  //     console.trace();
+  //     console.log(error);
+  //     console.log(error.message);
+  //     throw error;
+  //   }
+  // });
 
 
 

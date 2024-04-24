@@ -17,19 +17,23 @@ pub mod first_anchor_program {
     use super::*;
 
     pub fn my_gm_instruction(ctx: Context<MyGmAccounts>) -> Result<()>{
-        let gms = 2u8;
+        let gms =   9u8;
         let seeds: &[&[&[u8]]] = &[&[b"authority", &[ctx.bumps.pda]]];
-        // let accounts = PseudoGmAccounts{
-        //     signer: ctx.accounts.pda
-        // };
+
         let mut signer = ctx.accounts.pda.to_account_info();
+
+        msg!(" gm is signer {}", signer.is_signer);
         signer.is_signer = true;
+    
+        
+        let gsm_accounts = gm_anchor::cpi::accounts::GmAccounts{
+            signer,
+            gm_program: ctx.accounts.gm_program.to_account_info()
+        };
+
         let cpi_context = CpiContext::new_with_signer(
             ctx.accounts.gm_program.to_account_info(), 
-            gm_anchor::cpi::accounts::GmAccounts{
-                signer,
-                gm_program: ctx.accounts.gm_program.to_account_info()
-            },
+            gsm_accounts,
             seeds
         );
         msg!(" is signer {}", cpi_context.accounts.signer.is_signer);
@@ -38,12 +42,12 @@ pub mod first_anchor_program {
             gms
         )?;
         msg!("cpi successful");
-
+        Ok(())
         // solana_program::program::invoke_signed(
         //     &solana_program::instruction::Instruction{
         //         program_id: ctx.accounts.gm_program.key(),
         //         accounts: vec![solana_program::instruction::AccountMeta::new_readonly
-        //             (ctx.accounts.pda.key(), true)],
+        //             (ctx.accounts.pda.key(), true) ],
         //             // sha256(global:gm_instruction) -> 515D7D4C030E63C0
         //         data: vec![81, 93, 125, 76, 3, 14, 99, 192, gms]
         //     }, 
@@ -52,6 +56,39 @@ pub mod first_anchor_program {
         //     ],
         //     seeds
         // ).map_err(Into::into)
+        
+     
+        
+
+    }
+    pub fn my_pseudo_gm_instruction(ctx: Context<MyPseudoAccounts>, value: u64) -> Result<()>{
+
+        let seeds: &[&[&[u8]]] = &[&[b"authority_3", &[ctx.bumps.pda]]];
+
+        let  signer = ctx.accounts.pda.to_account_info();
+        
+        
+        let pseudo_accounts = gm_anchor::cpi::accounts::PseudoGmAccounts{
+            pseudo_account: ctx.accounts.pseudo_account.to_account_info(),
+            signer,
+            payer: ctx.accounts.authority.to_account_info(),
+            gm_program: ctx.accounts.gm_program.to_account_info(),
+            system_program : ctx.accounts.system_program.to_account_info()
+        };
+        
+        let cpi_context = CpiContext::new_with_signer(
+            ctx.accounts.gm_program.to_account_info(), 
+            pseudo_accounts,
+            seeds
+        );
+        // msg!(" is signer {}", cpi_context.accounts.signer.is_signer);
+        gm_anchor::cpi::pseudo_gm_instruction(
+            cpi_context,
+            value
+        )?;
+        msg!("cpi successful");
+
+        
         Ok(())
         
 
@@ -101,11 +138,28 @@ pub struct CloseAccounts<'info> {
 
 #[derive(Accounts)]
 pub struct MyGmAccounts<'info> {
+
     /// CHECK: This account is never written to or read from (it doesn't even exist; it's just used for signing)
     #[account(seeds = [b"authority"], bump)]
     pub pda: UncheckedAccount<'info>,
     pub gm_program: Program<'info, gm_anchor::GmProgram>
 }
+
+#[derive(Accounts)]
+pub struct MyPseudoAccounts<'info> {
+    #[account(init_if_needed,  payer = authority, space = 8 +32,
+        seeds = [b"pseudo_1"], bump)]
+    pseudo_account: Account<'info, gm_anchor::PeSudoAccount>,
+    /// CHECK: This account is never written to or read from (it doesn't even exist; it's just used for signing)
+    #[account(seeds = [b"authority_3"], bump)]
+    pub pda: UncheckedAccount<'info>,
+    pub gm_program: Program<'info, gm_anchor::GmProgram>,
+    #[account(mut, signer)]
+    pub authority: Signer<'info>,
+    pub system_program: Program<'info, System>
+}
+
+
 
 #[derive(Accounts)]
 #[instruction(pda1_nr: u32, pda2_nr: u32)]

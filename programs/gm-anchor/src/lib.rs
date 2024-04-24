@@ -23,6 +23,13 @@ pub mod gm_anchor {
             Ok(())
         }
     }
+    pub fn pseudo_gm_instruction(ctx: Context<PseudoGmAccounts>, number: u64) -> Result<()>{
+        msg!("pseudo gm instruction");
+        // let pseudo_account = &mut ctx.accounts.pseudo_account;
+        // pseudo_account.number = number;
+        // msg!("pseudo account number is {}", pseudo_account.number);
+        Ok(())
+    }
 }
 
 #[error_code]
@@ -34,6 +41,7 @@ pub enum GmErrors{
 
 #[derive(Clone)]
 pub struct GmProgram;
+
 impl anchor_lang::Id for GmProgram {
     fn id() -> Pubkey {
         id()
@@ -45,5 +53,22 @@ pub struct GmAccounts<'info> {
 
     /// CHECK: this is save, trust me, I'm a dev!
     pub signer: UncheckedAccount<'info>,
-    pub gm_program: Program<'info, GmProgram>
+    pub gm_program: Program<'info, GmProgram>,
+}
+
+#[derive(Accounts)]
+pub struct PseudoGmAccounts<'info>{
+
+    pub pseudo_account: Account<'info, PeSudoAccount >,
+    /// CHECK: using test
+    pub signer: UncheckedAccount<'info>,
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    pub gm_program: Program<'info, GmProgram>,
+    pub system_program: Program<'info, System>,
+}
+
+#[account]
+pub struct  PeSudoAccount{
+    pub number: u64
 }
